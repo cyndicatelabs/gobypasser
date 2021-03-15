@@ -67,7 +67,7 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 			EndColor,
 			length,
 			Request.Method,
-			Request.URL,
+			Request.URL.Path,
 			HeaderToString(Request.Header),
 		)
 	}
