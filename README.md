@@ -56,3 +56,7 @@ ________________________________________________________________________________
 
 * Mitchell Hines - https://twitter.com/@_g0dmode
 * Daniel Cocking - https://twitter.com/@dcocking7
+
+## TODO
+
+* Implement proper response size cannot use Response.Body
