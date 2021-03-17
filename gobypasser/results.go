@@ -59,7 +59,8 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 	}
 	var strLength = strconv.Itoa(len(body))
 
-	if !(stringInSlice(strCode, MyClient.UserOptions.ParsedFilterResponseCode) || stringInSlice(strLength, MyClient.UserOptions.ParsedFilterResponseSize)) {
+	if !(stringInSlice(strCode, MyClient.UserOptions.ParsedFilterResponseCode) || stringInSlice(strLength, MyClient.UserOptions.ParsedFilterResponseSize)) || (len(MyClient.UserOptions.ParsedFilterResponseSize) == 1 && len(MyClient.UserOptions.ParsedFilterResponseCode) == 1) {
+
 		fmt.Printf(
 			"%s%-15d%s %-15d %-20s %-90s %-60v\n",
 			Color,
@@ -67,7 +68,7 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 			EndColor,
 			length,
 			Request.Method,
-			Request.URL.Path,
+			Request.URL,
 			HeaderToString(Request.Header),
 		)
 	}

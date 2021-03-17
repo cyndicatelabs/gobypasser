@@ -132,8 +132,18 @@ func VerifyOptions(o *Options) (bool, string) {
 		o.BasePath = "/" + o.BasePath
 	}
 
-	o.ParsedFilterResponseCode = strings.Split(o.FilterResponseCode, ",")
-	o.ParsedFilterResponseSize = strings.Split(o.FilterResponseSize, ",")
+
+	if len(o.FilterResponseCode) > 0{
+		for _,c := range strings.Split(o.FilterResponseCode, ",") {
+			o.ParsedFilterResponseCode = append(o.ParsedFilterResponseCode, c)
+		}
+	}
+
+	if len(o.FilterResponseSize) > 0{
+		for _,c := range strings.Split(o.FilterResponseSize, ",") {
+			o.ParsedFilterResponseSize = append(o.ParsedFilterResponseSize, c)
+		}
+	}
 
 	return true, ""
 }

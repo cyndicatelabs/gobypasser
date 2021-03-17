@@ -35,4 +35,7 @@ func SetDefaultOptions(o *Options) {
 
 	o.FilterResponseCode = ""
 	o.FilterResponseSize = ""
+
+	o.ParsedFilterResponseCode = []string{}
+	o.ParsedFilterResponseSize = []string{}
 }
