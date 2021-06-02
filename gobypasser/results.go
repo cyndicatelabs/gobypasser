@@ -52,21 +52,24 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 		Color = EndColor
 	}
 
-	var length int = 0
+	var strLength = "0"
 	body, err := ioutil.ReadAll(Response.Body)
 	if err != nil {
-		length = -1
+		strLength = "-1"
 	}
-	var strLength = strconv.Itoa(len(body))
+	strLength = strconv.Itoa(len(body))
 
-	if !(stringInSlice(strCode, MyClient.UserOptions.ParsedFilterResponseCode) || stringInSlice(strLength, MyClient.UserOptions.ParsedFilterResponseSize)) || (len(MyClient.UserOptions.ParsedFilterResponseSize) == 1 && len(MyClient.UserOptions.ParsedFilterResponseCode) == 1) {
+	if !(stringInSlice(strCode, MyClient.UserOptions.ParsedFilterResponseCode) || 
+		stringInSlice(strLength, MyClient.UserOptions.ParsedFilterResponseSize)) || 
+			(len(MyClient.UserOptions.ParsedFilterResponseSize) == 1 && 
+				len(MyClient.UserOptions.ParsedFilterResponseCode) == 1) {
 
 		fmt.Printf(
-			"%s%-15d%s %-15d %-20s %-90s %-60v\n",
+			"%s%-15d%s %-15s %-20s %-90s %-60v\n",
 			Color,
 			Response.StatusCode,
 			EndColor,
-			length,
+			strLength,
 			Request.Method,
 			Request.URL,
 			HeaderToString(Request.Header),
