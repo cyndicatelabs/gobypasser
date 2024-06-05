@@ -22,9 +22,9 @@ type UsageFlag struct {
 }
 
 func Banner() {
-	Version := "1.0"
+	Version := "1.0.0"
 	fmt.Println()
-	fmt.Printf("\t\t\033[1;32mGoBypasser %s - https://www.github.com/cyndicatelabs/gobypasser - @cyndicatelabs\033[0m\n", Version)
+	fmt.Printf("\t\t\033[1;32mGoBypasser v%s - https://www.github.com/cyndicatelabs/gobypasser - @cyndicatelabs\033[0m\n", Version)
 	fmt.Println()
 	fmt.Printf("A tool to help find 403 URL bypasses using a number of different techniques.\n")
 	fmt.Println()
