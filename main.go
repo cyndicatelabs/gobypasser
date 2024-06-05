@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/cyndicatelabs/gobypasser"
+	"github.com/cyndicatelabs/gobypasser/pkg/gobypasser"
 )
 
 func main() {
