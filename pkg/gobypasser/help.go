@@ -22,7 +22,7 @@ type UsageFlag struct {
 }
 
 func Banner() {
-	Version := "0.1"
+	Version := "1.0"
 	fmt.Println()
 	fmt.Printf("\t\t\033[1;32mGoBypasser %s - https://www.github.com/cyndicatelabs/gobypasser - @cyndicatelabs\033[0m\n", Version)
 	fmt.Println()
