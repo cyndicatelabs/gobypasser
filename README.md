@@ -2,6 +2,11 @@
 
 A go utility to bypass URL 403 errors. Can easily be extended to include extra checks by modifying the `_bypassess.go` files.
 
+## Installation
+
+* If you have go compiler installed: `go install github.com/cyndicatelabs/gobypasser@latest` - This will also update the tool.
+* If not - `git clone https://github.com/cyndicatelabs/gobypasser ; cd gobypasser ; go build .`
+
 ## Usage
 
 ```
