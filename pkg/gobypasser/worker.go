@@ -8,56 +8,86 @@ import (
 
 func Start(o *Options) {
 
-	fmt.Println()
-	fmt.Print("Settings:")
-	fmt.Println()
-	fmt.Printf("  Base URL   : %s\n", o.BaseURL)
+	fmt.Println("Settings:")
+	if o.BaseURL != "" {
+		fmt.Printf("  Base URL   : %s\n", o.BaseURL)
+	} else if o.FileOfUrls != "" {
+		fmt.Printf("  Number of URLs : %d\n", len(o.UrlList))
+	}
 	fmt.Printf("  Base Path  : %s\n", o.BasePath)
 	fmt.Printf("  User-Agent : %s\n", o.UserAgent)
 	fmt.Println()
 
 	var wg sync.WaitGroup
 	var FinalURL string
-	FinalURL = o.BaseURL + o.BasePath
 	MyClient := NewHttpClient(o)
 
 	PrintTableHeader()
 
-	if o.VerbBypasses {
-		for _, Method := range VerbBypasses {
-			req := NewHttpRequest(MyClient, FinalURL, Method)
-			go MakeHttpRequest(MyClient, req, &wg)
-			wg.Add(1)
-		}
-		wg.Wait()
-	}
+	results := make(chan string, len(o.UrlList)*(len(VerbBypasses)+len(HeaderBypassesHdr)*len(HeaderBypassesVal)+len(PathBypasses)))
 
-	if o.HeaderBypasses {
-		for _, Hdr := range HeaderBypassesHdr {
-			for _, Val := range HeaderBypassesVal {
-				req := NewHttpRequest(MyClient, FinalURL, "GET")
+	for _, url := range o.UrlList {
+		FinalURL = url + o.BasePath
 
-				Val = strings.ReplaceAll(Val, "{base_path}", MyClient.UserOptions.BasePath)
-				Val = strings.ReplaceAll(Val, "{base_url}", MyClient.UserOptions.BaseURL)
-				req.Header.Add(Hdr, Val)
-
-				go MakeHttpRequest(MyClient, req, &wg)
+		if o.VerbBypasses {
+			for _, Method := range VerbBypasses {
 				wg.Add(1)
+				go func(url, method string) {
+					defer wg.Done()
+					req := NewHttpRequest(MyClient, url, method)
+					result := MakeHttpRequest(MyClient, req)
+					if result != "" {
+						results <- result
+					}
+				}(FinalURL, Method)
 			}
-			wg.Wait()
+		}
+
+		if o.HeaderBypasses {
+			for _, Hdr := range HeaderBypassesHdr {
+				for _, Val := range HeaderBypassesVal {
+					wg.Add(1)
+					go func(url, hdr, val string) {
+						defer wg.Done()
+						req := NewHttpRequest(MyClient, url, "GET")
+						val = strings.ReplaceAll(val, "{base_path}", MyClient.UserOptions.BasePath)
+						val = strings.ReplaceAll(val, "{base_url}", MyClient.UserOptions.BaseURL)
+						req.Header.Add(hdr, val)
+						result := MakeHttpRequest(MyClient, req)
+						if result != "" {
+							results <- result
+						}
+					}(FinalURL, Hdr, Val)
+				}
+			}
+		}
+
+		if o.PathBypasses {
+			for _, PathFmtStr := range PathBypasses {
+				wg.Add(1)
+				go func(pathFmtStr string) {
+					defer wg.Done()
+					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_path}", MyClient.UserOptions.BasePath)
+					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_url}", MyClient.UserOptions.BaseURL)
+					finalURL := pathFmtStr
+					req := NewHttpRequest(MyClient, finalURL, "GET")
+					result := MakeHttpRequest(MyClient, req)
+					if result != "" {
+						results <- result
+					}
+				}(PathFmtStr)
+			}
 		}
 	}
 
-	if o.PathBypasses {
-		for _, PathFmtStr := range PathBypasses {
-			PathFmtStr = strings.ReplaceAll(PathFmtStr, "{base_path}", MyClient.UserOptions.BasePath)
-			PathFmtStr = strings.ReplaceAll(PathFmtStr, "{base_url}", MyClient.UserOptions.BaseURL)
-			FinalURL = PathFmtStr
-
-			req := NewHttpRequest(MyClient, FinalURL, "GET")
-			go MakeHttpRequest(MyClient, req, &wg)
-			wg.Add(1)
-		}
+	// Close the results channel when all requests are done
+	go func() {
 		wg.Wait()
+		close(results)
+	}()
+
+	for result := range results {
+		fmt.Println(result)
 	}
+
 }

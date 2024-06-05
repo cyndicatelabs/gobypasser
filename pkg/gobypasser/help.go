@@ -56,7 +56,7 @@ func Usage() {
 		Name:          "General Options",
 		Description:   "",
 		Flags:         make([]UsageFlag, 0),
-		ExpectedFlags: []string{"u", "p", "v", "t"},
+		ExpectedFlags: []string{"u", "p", "v", "t", "f"},
 	}
 	uAttack := UsageSection{
 		Name:          "Attack Options",
@@ -76,7 +76,7 @@ func Usage() {
 	max_length := 0
 	flag.VisitAll(func(f *flag.Flag) {
 		for i, section := range sections {
-			if strInSlice(f.Name, section.ExpectedFlags) {
+			if StrInSlice(f.Name, section.ExpectedFlags) {
 				sections[i].Flags = append(sections[i].Flags, UsageFlag{
 					Name:        f.Name,
 					Description: f.Usage,
@@ -101,46 +101,55 @@ func Usage() {
 	fmt.Println()
 }
 
-func strInSlice(val string, slice []string) bool {
-	for _, v := range slice {
-		if v == val {
-			return true
-		}
-	}
-	return false
-}
-
 func VerifyOptions(o *Options) (bool, string) {
 
-	_, err := url.ParseRequestURI(o.BaseURL)
-	if err != nil {
-		return false, fmt.Sprintf("Missing URL parameter (-u): %s", err)
+	if len(o.FileOfUrls) > 0 {
+
+		if _, err := FileExists(o.FileOfUrls); err != nil {
+			return false, fmt.Sprintf("File does not exist: %s", o.BaseURL)
+		}
+		// parse the file and put the urls into the UrlList if they pass the ParseRequestURI check
+		tmpUrls, err := ParseFile(o.FileOfUrls)
+		if err != nil {
+			return false, fmt.Sprintf("Error parsing file: %s", err)
+		}
+
+		for _, urlItem := range tmpUrls {
+			if _, err := url.ParseRequestURI(urlItem); err == nil {
+				urlItem = strings.TrimSuffix(urlItem, "/")
+				o.UrlList = append(o.UrlList, urlItem)
+			}
+		}
+
+	} else {
+		_, err := url.ParseRequestURI(o.BaseURL)
+		if err != nil {
+			return false, fmt.Sprintf("Missing URL parameter (-u): %s", err)
+		}
+		o.BaseURL = strings.TrimSuffix(o.BaseURL, "/")
+		o.UrlList = append(o.UrlList, o.BaseURL)
 	}
+
+	fmt.Printf("%+v\n", o.UrlList)
 
 	if len(o.BasePath) == 0 {
-		return false, fmt.Sprintf("Missing path parameter (-p)")
+		return false, fmt.Sprintln("Missing path parameter (-p)")
 	}
-
-	if !(o.HeaderBypasses || o.PathBypasses || o.VerbBypasses) {
-		return false, fmt.Sprintf("Missing attack options")
-	}
-
-	o.BaseURL = strings.TrimSuffix(o.BaseURL, "/")
 
 	if !(strings.HasPrefix(o.BasePath, "/")) {
 		o.BasePath = "/" + o.BasePath
 	}
 
+	if !(o.HeaderBypasses || o.PathBypasses || o.VerbBypasses) {
+		return false, fmt.Sprintln("Missing attack options")
+	}
+
 	if len(o.FilterResponseCode) > 0 {
-		for _, c := range strings.Split(o.FilterResponseCode, ",") {
-			o.ParsedFilterResponseCode = append(o.ParsedFilterResponseCode, c)
-		}
+		o.ParsedFilterResponseCode = append(o.ParsedFilterResponseCode, strings.Split(o.FilterResponseCode, ",")...)
 	}
 
 	if len(o.FilterResponseSize) > 0 {
-		for _, c := range strings.Split(o.FilterResponseSize, ",") {
-			o.ParsedFilterResponseSize = append(o.ParsedFilterResponseSize, c)
-		}
+		o.ParsedFilterResponseSize = append(o.ParsedFilterResponseSize, strings.Split(o.FilterResponseSize, ",")...)
 	}
 
 	return true, ""

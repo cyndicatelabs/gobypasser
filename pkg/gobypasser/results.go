@@ -19,7 +19,6 @@ const (
 func PrintTableHeader() {
 	fmt.Printf("%-15s %-15s %-20s %-90s %-60s\n", "Response Code", "Response Size", "Verb", "Path", "Custom Header")
 	fmt.Printf("%s\n", strings.Repeat("_", 170))
-
 }
 
 func HeaderToString(Headers http.Header) string {
@@ -34,10 +33,12 @@ func HeaderToString(Headers http.Header) string {
 	return HdrString
 }
 
-func PrintResult(MyClient HttpClient, Request http.Request, Response http.Response) {
+func GetResult(MyClient HttpClient, Request http.Request, Response http.Response) string {
 
 	defer Response.Body.Close()
+
 	var Color string = EndColor
+	var returnLine string = ""
 	var strCode = strconv.Itoa(Response.StatusCode)
 
 	if strCode[0] == '2' {
@@ -64,8 +65,8 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 		(len(MyClient.UserOptions.ParsedFilterResponseSize) == 1 &&
 			len(MyClient.UserOptions.ParsedFilterResponseCode) == 1) {
 
-		fmt.Printf(
-			"%s%-15d%s %-15s %-20s %-90s %-60v\n",
+		returnLine = fmt.Sprintf(
+			"%s%-15d%s %-15s %-20s %-90s %-60v",
 			Color,
 			Response.StatusCode,
 			EndColor,
@@ -75,6 +76,8 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 			HeaderToString(Request.Header),
 		)
 	}
+
+	return returnLine
 }
 
 func stringInSlice(a string, list []string) bool {

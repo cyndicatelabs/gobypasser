@@ -12,6 +12,7 @@ func main() {
 	o := gobypasser.Options{}
 	gobypasser.SetDefaultOptions(&o)
 
+	flag.StringVar(&o.FileOfUrls, "f", "", "A file containing a list of URLs to test. (e.g. https://google.com)")
 	flag.StringVar(&o.BaseURL, "u", "", "The host with schema (e.g. https://google.com)")
 	flag.StringVar(&o.BasePath, "p", "", "The base path you want to access")
 	flag.BoolVar(&o.VerbBypasses, "verbs", false, "Cycle through all the verbs for the specified path.")

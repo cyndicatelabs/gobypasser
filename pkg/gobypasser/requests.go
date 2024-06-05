@@ -2,13 +2,12 @@ package gobypasser
 
 import (
 	"crypto/tls"
+	"fmt"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -65,20 +64,25 @@ func NewHttpRequest(MyClient HttpClient, FinalUrl string, Method string) http.Re
 	return req
 }
 
-func MakeHttpRequest(MyClient HttpClient, Request http.Request, wg *sync.WaitGroup) {
+func MakeHttpRequest(MyClient HttpClient, Request http.Request) string {
 
-	defer wg.Done()
+	// defer wg.Done()
 
 	Request.Header.Add("User-Agent", MyClient.UserOptions.UserAgent)
 
 	res, err := MyClient.HttpClient.Do(&Request)
 	if err != nil {
-		log.Fatal("Error: ", err)
+		// If its a timeout error
+		if strings.Contains(err.Error(), "Client.Timeout exceeded") {
+			fmt.Printf("Host timeout: %s\n - skipping...", Request.URL)
+		}
+	} else {
+		defer res.Body.Close()
 	}
-	defer res.Body.Close()
 
-	if err != nil {
-		log.Fatal("Error: ", err)
+	if err == nil {
+		return GetResult(MyClient, Request, *res)
+	} else {
+		return ""
 	}
-	PrintResult(MyClient, Request, *res)
 }

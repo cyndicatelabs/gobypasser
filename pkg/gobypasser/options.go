@@ -1,8 +1,10 @@
 package gobypasser
 
 type Options struct {
-	BaseURL  string
-	BasePath string
+	BaseURL    string
+	FileOfUrls string
+	BasePath   string
+	UrlList    []string
 
 	PathBypasses   bool
 	HeaderBypasses bool
@@ -22,6 +24,7 @@ type Options struct {
 
 func SetDefaultOptions(o *Options) {
 
+	o.FileOfUrls = ""
 	o.BaseURL = ""
 	o.BasePath = ""
 
