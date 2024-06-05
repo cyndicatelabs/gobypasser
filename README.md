@@ -6,7 +6,6 @@ A simple tool to bypass URL path restrictions. Can easily be extended to include
 
 ```
                 GoBypasser 0.1 - https://www.github.com/cyndicatelabs/gobypasser -
-                                Credits: @_g0dmode, @dcocking7
 
             A tool to aid finding URL bypasses using a number of different techniques.
 
@@ -38,7 +37,6 @@ EXAMPLE USAGE:
 [/gobypasser] $ ./gobypasser -u http://127.0.0.1:8080 -p admin -paths --hc 404
 
                 GoBypasser 0.1 - https://www.github.com/cyndicatelabs/gobypasser -
-                                Credits: @_g0dmode, @dcocking7
 
             A tool to aid finding URL bypasses using a number of different techniques.
             
