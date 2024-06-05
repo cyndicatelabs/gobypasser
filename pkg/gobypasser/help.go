@@ -25,7 +25,6 @@ func Banner() {
 	Version := "0.1"
 	fmt.Println()
 	fmt.Printf("\t\tGoBypasser %s - https://www.github.com/cyndicatelabs/gobypasser -\n", Version)
-	fmt.Printf("\t\t\t        Credits: @_g0dmode, @dcocking7\n")
 	fmt.Println()
 	fmt.Printf("\t    A tool to aid finding URL bypasses using a number of different techniques.\n")
 	fmt.Println()
@@ -132,15 +131,14 @@ func VerifyOptions(o *Options) (bool, string) {
 		o.BasePath = "/" + o.BasePath
 	}
 
-
-	if len(o.FilterResponseCode) > 0{
-		for _,c := range strings.Split(o.FilterResponseCode, ",") {
+	if len(o.FilterResponseCode) > 0 {
+		for _, c := range strings.Split(o.FilterResponseCode, ",") {
 			o.ParsedFilterResponseCode = append(o.ParsedFilterResponseCode, c)
 		}
 	}
 
-	if len(o.FilterResponseSize) > 0{
-		for _,c := range strings.Split(o.FilterResponseSize, ",") {
+	if len(o.FilterResponseSize) > 0 {
+		for _, c := range strings.Split(o.FilterResponseSize, ",") {
 			o.ParsedFilterResponseSize = append(o.ParsedFilterResponseSize, c)
 		}
 	}

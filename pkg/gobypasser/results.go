@@ -2,7 +2,7 @@ package gobypasser
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -53,16 +53,16 @@ func PrintResult(MyClient HttpClient, Request http.Request, Response http.Respon
 	}
 
 	var strLength = "0"
-	body, err := ioutil.ReadAll(Response.Body)
+	body, err := io.ReadAll(Response.Body)
 	if err != nil {
 		strLength = "-1"
 	}
 	strLength = strconv.Itoa(len(body))
 
-	if !(stringInSlice(strCode, MyClient.UserOptions.ParsedFilterResponseCode) || 
-		stringInSlice(strLength, MyClient.UserOptions.ParsedFilterResponseSize)) || 
-			(len(MyClient.UserOptions.ParsedFilterResponseSize) == 1 && 
-				len(MyClient.UserOptions.ParsedFilterResponseCode) == 1) {
+	if !(stringInSlice(strCode, MyClient.UserOptions.ParsedFilterResponseCode) ||
+		stringInSlice(strLength, MyClient.UserOptions.ParsedFilterResponseSize)) ||
+		(len(MyClient.UserOptions.ParsedFilterResponseSize) == 1 &&
+			len(MyClient.UserOptions.ParsedFilterResponseCode) == 1) {
 
 		fmt.Printf(
 			"%s%-15d%s %-15s %-20s %-90s %-60v\n",

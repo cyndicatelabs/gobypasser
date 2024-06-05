@@ -2,7 +2,7 @@ package gobypasser
 
 import (
 	"crypto/tls"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -51,7 +51,7 @@ func NewHttpRequest(MyClient HttpClient, FinalUrl string, Method string) http.Re
 			Method: Method,
 			URL:    reqURL,
 			Header: http.Header{},
-			Body:   ioutil.NopCloser(strings.NewReader(`{"id":"1"}`)),
+			Body:   io.NopCloser(strings.NewReader(`{"id":"1"}`)),
 		}
 	} else {
 		req = http.Request{
