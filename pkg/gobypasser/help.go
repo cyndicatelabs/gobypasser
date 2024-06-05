@@ -24,9 +24,9 @@ type UsageFlag struct {
 func Banner() {
 	Version := "0.1"
 	fmt.Println()
-	fmt.Printf("\t\tGoBypasser %s - https://www.github.com/cyndicatelabs/gobypasser -\n", Version)
+	fmt.Printf("\t\t\033[1;32mGoBypasser %s - https://www.github.com/cyndicatelabs/gobypasser - @cyndicatelabs\033[0m\n", Version)
 	fmt.Println()
-	fmt.Printf("\t    A tool to aid finding URL bypasses using a number of different techniques.\n")
+	fmt.Printf("A tool to help find 403 URL bypasses using a number of different techniques.\n")
 	fmt.Println()
 }
 
@@ -95,9 +95,9 @@ func Usage() {
 
 	fmt.Printf("EXAMPLE USAGE:\n")
 
-	fmt.Println("\tgobypasser -u https://www.google.com/ -p /api")
-	fmt.Println("\tgobypasser -u https://www.google.com/ -p /api --hc 302,404 --verbs")
-	fmt.Println("\tgobypasser -u https://www.google.com/ -p /api --hs 1024 --headers")
+	fmt.Println("\tgobypasser -u https://www.google.com/ -p admin -verbs -hc 403")
+	fmt.Println("\tgobypasser -u https://www.google.com/ -p admin -verbs -headers -paths -hc 403,400")
+	fmt.Println("\tgobypasser -f ./url_list.txt -p admin -verbs -headers -paths -hc 403,400")
 	fmt.Println()
 }
 
