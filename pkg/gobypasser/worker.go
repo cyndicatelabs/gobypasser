@@ -65,10 +65,9 @@ func Start(o *Options) {
 		if o.PathBypasses {
 			for _, PathFmtStr := range PathBypasses {
 				wg.Add(1)
-				go func(pathFmtStr string) {
-					defer wg.Done()
-					urlCopy := url                                                     // Create a copy of the loop variable
-					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_url}", urlCopy) // Use the copy instead of the loop variable
+				go func(url, pathFmtStr string) {
+					defer wg.Done()                                                // Create a copy of the loop variable
+					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_url}", url) // Use the copy instead of the loop variable
 					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_path}", MyClient.UserOptions.BasePath)
 					finalURL := pathFmtStr
 					req := NewHttpRequest(MyClient, finalURL, "GET")
@@ -76,7 +75,7 @@ func Start(o *Options) {
 					if result != "" {
 						results <- result
 					}
-				}(PathFmtStr)
+				}(url, PathFmtStr)
 			}
 		}
 	}
