@@ -18,7 +18,7 @@ var HeaderBypassesHdr = []string{
 }
 
 var HeaderBypassesVal = []string{
-	"{base_url}/{base_path}",
+	"{base_url}{base_path}",
 	"/{base_path}",
 	"{base_path}",
 	"http://127.0.0.1:80/{base_path}",

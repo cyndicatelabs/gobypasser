@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 )
 
 func Start(o *Options) {
+
+	start := time.Now()
 
 	fmt.Println("Settings:")
 	if o.BaseURL != "" {
@@ -79,6 +82,31 @@ func Start(o *Options) {
 				}(url, PathFmtStr)
 			}
 		}
+
+		// Do both path manipulation and header manipulation together
+		if o.HeaderBypasses && o.PathBypasses {
+			for _, PathFmtStr := range PathBypasses {
+				for _, Hdr := range HeaderBypassesHdr {
+					for _, Val := range HeaderBypassesVal {
+						wg.Add(1)
+						go func(url, pathFmtStr, hdr, val string) {
+							defer wg.Done()
+							pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_url}", url)
+							pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_path}", MyClient.UserOptions.BasePath)
+							finalURL := pathFmtStr
+							req := NewHttpRequest(MyClient, finalURL, "GET")
+							val = strings.ReplaceAll(val, "{base_path}", MyClient.UserOptions.BasePath)
+							val = strings.ReplaceAll(val, "{base_url}", fmt.Sprintf(MyClient.UserOptions.BaseURL, "/"))
+							req.Header.Add(hdr, val)
+							result := MakeHttpRequest(MyClient, req)
+							if result != "" {
+								results <- result
+							}
+						}(url, PathFmtStr, Hdr, Val)
+					}
+				}
+			}
+		}
 	}
 
 	// Close the results channel when all requests are done
@@ -91,4 +119,13 @@ func Start(o *Options) {
 		fmt.Println(result)
 	}
 
+	// Print all timeout requests
+	elapsed := time.Since(start)
+	elapsedSeconds := elapsed.Seconds()
+	fmt.Printf("\n\033[1;37m[Total Requests]\033[0m: %d\t\033[1;34m[Timed-out]\033[0m: %d\t\033[1;32m[Succeeded]\033[0m: %d\t\033[1;31m[Failed]\033[0m: %d\t\033[1;37m[Elapsed time]\033[0m: %.2f seconds\n",
+		MyClient.UserOptions.TimeoutRequests+MyClient.UserOptions.TotalRequestsSucceeded,
+		MyClient.UserOptions.TimeoutRequests, MyClient.UserOptions.TotalRequestsSucceeded,
+		MyClient.UserOptions.TotalRequestsFailed,
+		elapsedSeconds,
+	)
 }

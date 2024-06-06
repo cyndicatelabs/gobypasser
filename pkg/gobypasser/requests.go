@@ -2,7 +2,6 @@ package gobypasser
 
 import (
 	"crypto/tls"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -73,9 +72,12 @@ func MakeHttpRequest(MyClient HttpClient, Request http.Request) string {
 	if err != nil {
 		// If its a timeout error
 		if strings.Contains(err.Error(), "Client.Timeout exceeded") {
-			fmt.Printf("Host timeout: %s\n - skipping...", Request.URL)
+			// fmt.Printf("Host timeout: %s\n - skipping...", Request.URL)
+			MyClient.UserOptions.TimeoutRequests++
 		}
+		MyClient.UserOptions.TotalRequestsFailed++
 	} else {
+		MyClient.UserOptions.TotalRequestsSucceeded++
 		defer res.Body.Close()
 	}
 

@@ -20,6 +20,10 @@ type Options struct {
 	Colors  bool
 	Verbose bool
 	Timeout int
+
+	TimeoutRequests        int
+	TotalRequestsFailed    int
+	TotalRequestsSucceeded int
 }
 
 func SetDefaultOptions(o *Options) {
@@ -41,4 +45,8 @@ func SetDefaultOptions(o *Options) {
 
 	o.ParsedFilterResponseCode = []string{}
 	o.ParsedFilterResponseSize = []string{}
+
+	o.TimeoutRequests = 0
+	o.TotalRequestsSucceeded = 0
+	o.TotalRequestsFailed = 0
 }
