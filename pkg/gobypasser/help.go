@@ -134,10 +134,6 @@ func VerifyOptions(o *Options) (bool, string) {
 		return false, fmt.Sprintln("Missing path parameter (-p)")
 	}
 
-	// if !(strings.HasPrefix(o.BasePath, "/")) {
-	// 	o.BasePath = "/" + o.BasePath
-	// }
-
 	if !(o.HeaderBypasses || o.PathBypasses || o.VerbBypasses) {
 		return false, fmt.Sprintln("Missing attack options")
 	}

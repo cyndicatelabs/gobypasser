@@ -27,7 +27,8 @@ func Start(o *Options) {
 	results := make(chan string, len(o.UrlList)*(len(VerbBypasses)+len(HeaderBypassesHdr)*len(HeaderBypassesVal)+len(PathBypasses)))
 
 	for _, url := range o.UrlList {
-		FinalURL = url + o.BasePath
+		// FinalURL Should be url + o.BasePath + "/"
+		FinalURL = fmt.Sprintf("%s/%s", url, o.BasePath)
 
 		if o.VerbBypasses {
 			for _, Method := range VerbBypasses {
@@ -51,7 +52,7 @@ func Start(o *Options) {
 						defer wg.Done()
 						req := NewHttpRequest(MyClient, url, "GET")
 						val = strings.ReplaceAll(val, "{base_path}", MyClient.UserOptions.BasePath)
-						val = strings.ReplaceAll(val, "{base_url}", MyClient.UserOptions.BaseURL)
+						val = strings.ReplaceAll(val, "{base_url}", fmt.Sprintf(MyClient.UserOptions.BaseURL, "/"))
 						req.Header.Add(hdr, val)
 						result := MakeHttpRequest(MyClient, req)
 						if result != "" {
