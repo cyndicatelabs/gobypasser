@@ -130,8 +130,6 @@ func VerifyOptions(o *Options) (bool, string) {
 		o.UrlList = append(o.UrlList, o.BaseURL)
 	}
 
-	fmt.Printf("%+v\n", o.UrlList)
-
 	if len(o.BasePath) == 0 {
 		return false, fmt.Sprintln("Missing path parameter (-p)")
 	}
