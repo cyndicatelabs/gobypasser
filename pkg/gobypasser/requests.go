@@ -74,8 +74,9 @@ func MakeHttpRequest(MyClient HttpClient, Request http.Request) string {
 		if strings.Contains(err.Error(), "Client.Timeout exceeded") {
 			// fmt.Printf("Host timeout: %s\n - skipping...", Request.URL)
 			MyClient.UserOptions.TimeoutRequests++
+		} else {
+			MyClient.UserOptions.TotalRequestsFailed++
 		}
-		MyClient.UserOptions.TotalRequestsFailed++
 	} else {
 		MyClient.UserOptions.TotalRequestsSucceeded++
 		defer res.Body.Close()
