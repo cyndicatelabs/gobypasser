@@ -67,7 +67,6 @@ func NewHttpRequest(MyClient HttpClient, FinalUrl string, Method string) http.Re
 func MakeHttpRequest(MyClient HttpClient, Request http.Request) string {
 
 	// defer wg.Done()
-
 	Request.Header.Add("User-Agent", MyClient.UserOptions.UserAgent)
 
 	res, err := MyClient.HttpClient.Do(&Request)
