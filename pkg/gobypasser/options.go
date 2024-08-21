@@ -52,4 +52,6 @@ func SetDefaultOptions(o *Options) {
 	o.TotalRequestsSucceeded = 0
 	o.TotalRequestsFailed = 0
 
+	o.Threads = 30
+
 }

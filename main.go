@@ -22,7 +22,7 @@ func main() {
 	flag.StringVar(&o.FilterResponseCode, "hc", "", "The response code(s) to hide (e.g. -hc 302 or -hc 404,400).")
 	flag.StringVar(&o.FilterResponseSize, "hs", "", "The response size(s) to hide (e.g. -hs 4096 or -hs 4096,1024).")
 	flag.BoolVar(&o.Verbose, "v", false, "Verbose output")
-	flag.IntVar(&o.Threads, "t", 1, "Concurrent requests")
+	flag.IntVar(&o.Threads, "t", 30, "Concurrent requests")
 
 	flag.Usage = gobypasser.Usage
 	flag.Parse()
