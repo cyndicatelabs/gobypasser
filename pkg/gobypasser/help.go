@@ -146,5 +146,9 @@ func VerifyOptions(o *Options) (bool, string) {
 		o.ParsedFilterResponseSize = append(o.ParsedFilterResponseSize, strings.Split(o.FilterResponseSize, ",")...)
 	}
 
+	if (o.Threads < 1) || (o.Threads > 200) {
+		return false, fmt.Sprintln("Concurrent threads must be between 1 - 200")
+	}
+
 	return true, ""
 }
