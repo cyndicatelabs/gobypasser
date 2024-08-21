@@ -24,6 +24,8 @@ type Options struct {
 	TimeoutRequests        int
 	TotalRequestsFailed    int
 	TotalRequestsSucceeded int
+
+	Threads int
 }
 
 func SetDefaultOptions(o *Options) {
@@ -49,4 +51,5 @@ func SetDefaultOptions(o *Options) {
 	o.TimeoutRequests = 0
 	o.TotalRequestsSucceeded = 0
 	o.TotalRequestsFailed = 0
+
 }

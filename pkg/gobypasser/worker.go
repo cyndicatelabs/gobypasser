@@ -28,6 +28,7 @@ func Start(o *Options) {
 	PrintTableHeader()
 
 	results := make(chan string, len(o.UrlList)*(len(VerbBypasses)+len(HeaderBypassesHdr)*len(HeaderBypassesVal)+len(PathBypasses)))
+	workerPool := make(chan struct{}, o.Threads)
 
 	for _, url := range o.UrlList {
 		// FinalURL Should be url + o.BasePath + "/"
@@ -36,8 +37,10 @@ func Start(o *Options) {
 		if o.VerbBypasses {
 			for _, Method := range VerbBypasses {
 				wg.Add(1)
+				workerPool <- struct{}{}
 				go func(url, method string) {
 					defer wg.Done()
+					defer func() { <-workerPool }()
 					req := NewHttpRequest(MyClient, url, method)
 					result := MakeHttpRequest(MyClient, req)
 					if result != "" {
@@ -51,8 +54,10 @@ func Start(o *Options) {
 			for _, Hdr := range HeaderBypassesHdr {
 				for _, Val := range HeaderBypassesVal {
 					wg.Add(1)
+					workerPool <- struct{}{}
 					go func(url, hdr, val string) {
 						defer wg.Done()
+						defer func() { <-workerPool }()
 						req := NewHttpRequest(MyClient, url, "GET")
 						val = strings.ReplaceAll(val, "{base_path}", MyClient.UserOptions.BasePath)
 						val = strings.ReplaceAll(val, "{base_url}", fmt.Sprintf(MyClient.UserOptions.BaseURL, "/"))
@@ -69,8 +74,10 @@ func Start(o *Options) {
 		if o.PathBypasses {
 			for _, PathFmtStr := range PathBypasses {
 				wg.Add(1)
+				workerPool <- struct{}{}
 				go func(url, pathFmtStr string) {
-					defer wg.Done()                                                // Create a copy of the loop variable
+					defer wg.Done() // Create a copy of the loop variable
+					defer func() { <-workerPool }()
 					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_url}", url) // Use the copy instead of the loop variable
 					pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_path}", MyClient.UserOptions.BasePath)
 					finalURL := pathFmtStr
@@ -89,8 +96,10 @@ func Start(o *Options) {
 				for _, Hdr := range HeaderBypassesHdr {
 					for _, Val := range HeaderBypassesVal {
 						wg.Add(1)
+						workerPool <- struct{}{}
 						go func(url, pathFmtStr, hdr, val string) {
 							defer wg.Done()
+							defer func() { <-workerPool }()
 							pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_url}", url)
 							pathFmtStr = strings.ReplaceAll(pathFmtStr, "{base_path}", MyClient.UserOptions.BasePath)
 							finalURL := pathFmtStr
